@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emotion Recognition</title>
+  <style>
+    body {
+      background-color: #f0f8ff; /* Lightest blue background color */
+    }
+    #container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    #video-container {
+      position: relative;
+      width: 640px; /* Adjust according to your webcam feed size */
+      height: 480px; /* Adjust according to your webcam feed size */
+    }
+    #video {
+      width: 100%;
+      height: 100%;
+    }
+    #output-container {
+      margin-left: 20px;
+    }
+    #output {
+      background-color: rgba(0, 0, 0, 0.5);
+      color: white;
+      padding: 10px;
+      width: 200px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>Facial Emotion Recognition</h1>
+  
+  <div id="container">
+    <div id="video-container">
+      <video id="video" autoplay></video>
+    </div>
+    <div id="output-container">
+      <h2>Output</h2>
+      <div id="output"></div>
+    </div>
+  </div>
+
+  <script>
+    const video = document.getElementById('video');
+    const output = document.getElementById('output');
+
+    // Use MediaDevices API to get access to the webcam
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      navigator.mediaDevices.getUserMedia({ video: true })
+        .then(function (stream) {
+          video.srcObject = stream;
+        })
+        .catch(function (error) {
+          console.error('Error accessing the webcam:', error);
+        });
+    }
+
+    // Function to fetch and display the emotion recognition output
+    function fetchEmotionRecognition() {
+      fetch('/emotion_recognition')
+        .then(response => response.blob())
+        .then(blob => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const imageData = reader.result;
+            output.innerHTML = '<img src="' + imageData + '" />';
+          };
+          reader.readAsDataURL(blob);
+        })
+        .catch(error => {
+          console.error('Error fetching emotion recognition output:', error);
+        });
+    } 
+
+    // Call the fetchEmotionRecognition function every 1 second
+    setInterval(fetchEmotionRecognition, 1000);
+  </script>
+</body>
+</html>

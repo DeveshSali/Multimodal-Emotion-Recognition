@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Emotion Detection</title>
+    <style>
+        body {
+            background-image: url("{{ url_for('static', filename='text_bg.gif') }}"); /* Background GIF */
+            background-size: 1900px 1300px;
+            background-position: cover;
+            background-repeat: no-repeat;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 100px auto; /* Adjust margin to move the container down */
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.7); /* Semi-transparent background color */
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .output-box {
+            margin-bottom: 20px;
+        }
+
+        #audioOutput, #moodOutput {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        // Define a global variable to store the audio stream
+        let audioStream;
+
+        // Function to start recording audio
+        function startRecording() {
+            $('#audioOutput').text('Recording audio...');
+            // Use Web Audio API to record audio
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(function(stream) {
+                    audioStream = stream;
+                    // Start recording
+                    audioRecorder = new MediaRecorder(stream);
+                    audioRecorder.start();
+                    // When recording is stopped, call detectEmotion function
+                    audioRecorder.ondataavailable = function(e) {
+                        const audioBlob = e.data;
+                        detectEmotion(audioBlob);
+                    };
+                })
+                .catch(function(err) {
+                    console.error('Error accessing microphone: ', err);
+                });
+        }
+
+        // Function to stop recording audio
+        function stopRecording() {
+            if (audioStream) {
+                // Stop the media stream
+                audioStream.getTracks().forEach(track => track.stop());
+            }
+            $('#audioOutput').text('Recording stopped');
+        }
+
+        // Function to detect emotion from recorded audio
+        function detectEmotion(audioBlob) {
+            // Convert audio blob to binary data
+            const reader = new FileReader();
+            reader.onload = function() {
+                const audioData = reader.result;
+                // Send audio data to server for emotion detection
+                $.ajax({
+                    type: 'POST',
+                    url: '/stop_audio_recording',
+                    data: audioData,
+                    contentType: 'application/octet-stream',
+                    success: function(response) {
+                        const result = response;
+                        $('#moodOutput').text('Emotion: ' + result.emotion);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(xhr.responseText);
+                    }
+                });
+            };
+            reader.readAsArrayBuffer(audioBlob);
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Audio Emotion Detection</h1>
+        <div class="output-box">
+            <p id="audioOutput">Audio Output: </p>
+        </div>
+        <div class="output-box">
+            <p id="moodOutput">Mood: </p>
+        </div>
+        <!-- Buttons to start and stop recording -->
+        <button onclick="startRecording()">Start Recording</button>
+        <button onclick="stopRecording()">Stop Recording</button>
+    </div>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multimodal Emotion Recognition</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-image: url("{{ url_for('static', filename='background.gif') }}"); /* Background image */
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    h1 {
+      font-weight: bold;
+      font-size: 2.5em;
+      color: #fff; /* White text color */
+      text-align: center;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Shadow for better visibility */
+    }
+
+    p {
+      font-weight: bold;
+      font-size: 1.2em;
+      color: #fff; /* White text color */
+      text-align: center;
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: space-between; /* Align buttons with space between them */
+      align-items: center;
+      margin-top: 20px; /* Adjust margin as needed */
+      width: 80%; /* Adjust width of the container */
+    }
+
+    .button-container button {
+      font-weight: bold;
+      font-size: 1.5em;
+      padding: 10px 20px;
+      border: none;
+      background-color: #007bff; /* Blue button color */
+      color: #fff; /* White text color */
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      width: 48%; /* Adjust width of the buttons */
+    }
+
+    .button-container button:hover {
+      background-color: #0056b3; /* Darker blue on hover */
+    }
+  </style>
+</head>
+<body>
+  <h1>Multimodal Emotion Recognition</h1>
+  <p>Click the button below to start the application.</p>
+  <div class="button-container">
+    <button onclick="redirectToEmotionDetection()">Facial Emotion Recognition</button>
+    <button onclick="redirectToAudioEmotionDetection()">Audio Emotion Recognition</button>
+    <button onclick="redirectToTextEmotionDetection()">Text Emotion Recognition</button>
+  </div>
+
+  <script>
+    function redirectToEmotionDetection() {
+      // Redirect to the /emotion_recognition route defined in Flask
+      window.location.href = "/emotion_recognition";
+    }
+    
+    function redirectToAudioEmotionDetection() {
+      window.location.href = "/audio_emotion_recognition";  // Corrected route name
+    }
+
+    function redirectToTextEmotionDetection() {
+      window.location.href = "/text_emotion_detection";
+    }
+  </script>
+</body>
+</html>
